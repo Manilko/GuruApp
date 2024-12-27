@@ -20,7 +20,12 @@ class AppCoordinator: Coordinator {
     }
 
     func start() {
-        let splashViewController = ViewController()
+        let splashViewModel = SplashViewModel()
+        let splashViewController = SplashViewController(viewModel: splashViewModel)
+        splashViewController.onLoadingComplete = { [weak self] items in
+            // showMainScreen
+        }
         navigationController.pushViewController(splashViewController, animated: false)
     }
+
 }
