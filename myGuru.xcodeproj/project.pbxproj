@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7BC14C182D1F60AA00ACDEAB /* Differentiator in Frameworks */ = {isa = PBXBuildFile; productRef = 7BC14C172D1F60AA00ACDEAB /* Differentiator */; };
+		7BC14C1A2D1F60AA00ACDEAB /* RxDataSources in Frameworks */ = {isa = PBXBuildFile; productRef = 7BC14C192D1F60AA00ACDEAB /* RxDataSources */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		7BC14BE42D1F58D600ACDEAB /* myGuru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = myGuru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BC14C182D1F60AA00ACDEAB /* Differentiator in Frameworks */,
+				7BC14C1A2D1F60AA00ACDEAB /* RxDataSources in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +85,8 @@
 			);
 			name = myGuru;
 			packageProductDependencies = (
+				7BC14C172D1F60AA00ACDEAB /* Differentiator */,
+				7BC14C192D1F60AA00ACDEAB /* RxDataSources */,
 			);
 			productName = myGuru;
 			productReference = 7BC14BE42D1F58D600ACDEAB /* myGuru.app */;
@@ -107,6 +116,10 @@
 			);
 			mainGroup = 7BC14BDB2D1F58D600ACDEAB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7BC14C152D1F608900ACDEAB /* XCRemoteSwiftPackageReference "RxSwift" */,
+				7BC14C162D1F60AA00ACDEAB /* XCRemoteSwiftPackageReference "RxDataSources" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7BC14BE52D1F58D600ACDEAB /* Products */;
 			projectDirPath = "";
@@ -333,6 +346,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7BC14C152D1F608900ACDEAB /* XCRemoteSwiftPackageReference "RxSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.8.0;
+			};
+		};
+		7BC14C162D1F60AA00ACDEAB /* XCRemoteSwiftPackageReference "RxDataSources" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RxSwiftCommunity/RxDataSources";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7BC14C172D1F60AA00ACDEAB /* Differentiator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7BC14C162D1F60AA00ACDEAB /* XCRemoteSwiftPackageReference "RxDataSources" */;
+			productName = Differentiator;
+		};
+		7BC14C192D1F60AA00ACDEAB /* RxDataSources */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7BC14C162D1F60AA00ACDEAB /* XCRemoteSwiftPackageReference "RxDataSources" */;
+			productName = RxDataSources;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7BC14BDC2D1F58D600ACDEAB /* Project object */;
 }
