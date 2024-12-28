@@ -7,20 +7,32 @@
 import RxSwift
 import RxCocoa
 
-class ItemListViewModel: BaseViewModel, LoadableViewModel {
-    var items = BehaviorRelay<[Item]>(value: [])
+protocol ItemListViewModelProtocol: BaseViewModelProtocol, LoadProtocol {
+    var output: ItemListViewModel.Output { get }
+    func toggleFavorite(at index: Int)
+    func deleteItem(at index: Int)
+    func removeAllFavorites()
+}
 
-    var favoriteItems: Observable<[Item]> {
-        items.map { $0.filter { $0.isFavorite } }
+class ItemListViewModel: BaseViewModel, ItemListViewModelProtocol {
+
+    struct Output {
+        let items: Observable<[Item]>
+        let favoriteItems: Observable<[Item]>
+        let hasFavorites: Observable<Bool>
     }
-
-    var hasFavorites: Observable<Bool> {
-        favoriteItems.map { !$0.isEmpty }
-    }
-
+    var output: Output
+    // MARK: - private subject
+    private var items = BehaviorRelay<[Item]>(value: [])
+    
     init(initialItems: [Item]) {
-        super.init()
         self.items.accept(initialItems)
+        self.output = Output(
+            items: items.asObservable(),
+            favoriteItems: items.map { $0.filter { $0.isFavorite } },
+            hasFavorites: items.map { !$0.filter { $0.isFavorite }.isEmpty }
+        )
+        super.init()
     }
 
     func toggleFavorite(at index: Int) {
@@ -37,16 +49,9 @@ class ItemListViewModel: BaseViewModel, LoadableViewModel {
 
     func removeAllFavorites() {
         var currentItems = items.value
-        currentItems = currentItems.map { Item(title: $0.title,
-                                               subtitle: $0.subtitle,
-                                               description: $0.description,
-                                               isFavorite: false) }
-        items.accept(currentItems)
-    }
-
-    func appendItems(newItems: [Item]) {
-        var currentItems = items.value
-        currentItems.append(contentsOf: newItems)
+        currentItems = currentItems.map {
+            Item(title: $0.title, subtitle: $0.subtitle, description: $0.description, isFavorite: false)
+        }
         items.accept(currentItems)
     }
 
@@ -66,10 +71,16 @@ class ItemListViewModel: BaseViewModel, LoadableViewModel {
                     self.handleError(error)
                 },
                 onCompleted: { [weak self] in
-                    self?.isLoading.accept(false)
+                    guard let self = self else { return }
+                    self.isLoading.accept(false)
                 }
             )
             .disposed(by: disposeBag)
     }
-}
 
+    private func appendItems(newItems: [Item]) {
+        var currentItems = items.value
+        currentItems.append(contentsOf: newItems)
+        items.accept(currentItems)
+    }
+}

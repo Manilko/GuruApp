@@ -8,19 +8,25 @@
 import RxSwift
 import RxCocoa
 
-protocol LoadableViewModel {
+protocol LoadProtocol {
     func loadMoreItems(count: Int)
 }
 
-class BaseViewModel {
+protocol BaseViewModelProtocol {
+    var isLoading: BehaviorRelay<Bool> { get }
+    var error: PublishRelay<Error> { get }
+    func handleError(_ error: Error)
+}
+
+class BaseViewModel: BaseViewModelProtocol {
     let isLoading = BehaviorRelay<Bool>(value: false)
     let error = PublishRelay<Error>()
 
     let dataService: DataServiceProtocol
     let disposeBag = DisposeBag()
 
-    init() {
-        self.dataService = DataService.shared
+    init(dataService: DataServiceProtocol = DataService.shared) {
+        self.dataService = dataService
     }
 
     func handleError(_ error: Error) {

@@ -11,10 +11,10 @@ import RxCocoa
 
 class SplashViewController: UIViewController {
     private let disposeBag = DisposeBag()
-    private var viewModel = SplashViewModel()
+    private var viewModel: SplashViewModelProtocol
     var onLoadingComplete: (([Item]) -> Void)?
 
-    init(viewModel: SplashViewModel) {
+    init(viewModel: SplashViewModelProtocol) {
             self.viewModel = viewModel
             super.init(nibName: nil, bundle: nil)
         }
@@ -35,7 +35,7 @@ class SplashViewController: UIViewController {
     }
 
     private func setupBindings() {
-        viewModel.data
+        viewModel.output.data
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] items in
                 self?.onLoadingComplete?(items)

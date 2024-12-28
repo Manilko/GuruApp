@@ -9,8 +9,26 @@ import RxSwift
 import RxCocoa
 import UIKit
 
-class SplashViewModel: BaseViewModel {
-    let data = PublishRelay<[Item]>()
+protocol SplashViewModelProtocol: BaseViewModelProtocol {
+    var output: SplashViewModel.Output { get }
+    func startLoading(count: Int)
+}
+
+class SplashViewModel: BaseViewModel, SplashViewModelProtocol{
+    
+    struct Output {
+        let data: Observable<[Item]>
+    }
+    var output: Output
+    // MARK: - private subject
+    private let data = PublishRelay<[Item]>()
+    
+    init() {
+        self.output = Output(
+            data: data.asObservable()
+        )
+        super.init()
+    }
 
     func startLoading(count: Int) {
         isLoading.accept(true)

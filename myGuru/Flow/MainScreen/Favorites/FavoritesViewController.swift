@@ -38,7 +38,7 @@ class FavoritesViewController: UIViewController {
 
     // MARK: - Bindings
     private func setupBindings() {
-        viewModel.favoriteItems
+        viewModel.output.favoriteItems
             .bind(to: favoritesView.tableView.rx.items(cellIdentifier: FavoriteCell.identifier, cellType: FavoriteCell.self)) { [weak self] index, item, cell in
                 guard let self = self else { return }
                 cell.configure(with: item)
@@ -47,18 +47,26 @@ class FavoritesViewController: UIViewController {
             .disposed(by: disposeBag)
 
         removeFavoriteRelay
-            .subscribe(onNext: { [weak self] index in
+            .withLatestFrom(viewModel.output.favoriteItems) { (index: $0, favorites: $1) }
+            .subscribe(onNext: { [weak self] index, favorites in
                 guard let self = self else { return }
-                let currentFavorites = self.viewModel.items.value.filter { $0.isFavorite }
-                guard index < currentFavorites.count else { return }
-                let itemToRemove = currentFavorites[index]
-                if let originalIndex = self.viewModel.items.value.firstIndex(where: { $0.title == itemToRemove.title }) {
-                    self.viewModel.toggleFavorite(at: originalIndex)
-                }
+                
+                guard index < favorites.count else { return }
+                
+                let itemToRemove = favorites[index]
+                
+                viewModel.output.items
+                    .take(1)
+                    .subscribe(onNext: { allItems in
+                        if let originalIndex = allItems.firstIndex(where: { $0.title == itemToRemove.title }) {
+                            self.viewModel.toggleFavorite(at: originalIndex)
+                        }
+                    })
+                    .disposed(by: self.disposeBag)
             })
             .disposed(by: disposeBag)
         
-        viewModel.hasFavorites
+        viewModel.output.hasFavorites
             .map { !$0 }
             .observe(on: MainScheduler.instance)
             .bind(to: favoritesView.deleteAllButton.rx.isHidden)
@@ -70,7 +78,7 @@ class FavoritesViewController: UIViewController {
             })
             .disposed(by: disposeBag)
         
-        viewModel.hasFavorites
+        viewModel.output.hasFavorites
             .map { $0 }
             .observe(on: MainScheduler.instance)
             .bind(to: favoritesView.emptyLabel.rx.isHidden)

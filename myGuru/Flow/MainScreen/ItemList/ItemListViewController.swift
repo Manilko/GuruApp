@@ -12,7 +12,7 @@ class ItemListViewController: UIViewController {
 
     // MARK: - Properties
     private let disposeBag = DisposeBag()
-    private let viewModel: ItemListViewModel
+    private let viewModel: ItemListViewModelProtocol
     private let itemListView: ItemListViewProtocol
     private var isLoadingMoreItems = false
 
@@ -20,7 +20,7 @@ class ItemListViewController: UIViewController {
     private let favoriteButtonRelay: PublishRelay<Int>
 
     // MARK: - Initializer
-    init(viewModel: ItemListViewModel, view: ItemListViewProtocol) {
+    init(viewModel: ItemListViewModelProtocol, view: ItemListViewProtocol) {
         self.viewModel = viewModel
         self.itemListView = view
         self.favoriteButtonRelay = PublishRelay<Int>()
@@ -45,7 +45,7 @@ class ItemListViewController: UIViewController {
     private func setupBindings() {
         let itemSource = dataSource.create()
 
-        viewModel.items
+        viewModel.output.items
             .map { [SectionOfItems(header: "Items", items: $0)] }
             .bind(to: itemListView.tableView.rx.items(dataSource: itemSource))
             .disposed(by: disposeBag)
@@ -59,7 +59,7 @@ class ItemListViewController: UIViewController {
             })
             .disposed(by: disposeBag)
 
-        viewModel.hasFavorites
+        viewModel.output.hasFavorites
             .map { !$0 }
             .observe(on: MainScheduler.instance)
             .bind(to: itemListView.removeAllFavoritesButton.rx.isHidden)
