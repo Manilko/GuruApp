@@ -21,7 +21,7 @@ class ItemTableViewCell: UITableViewCell, NibCapable{
     private let favoriteButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.tintColor = .red
+        button.tintColor = .favoritePink
         return button
     }()
 
@@ -61,7 +61,7 @@ class ItemTableViewCell: UITableViewCell, NibCapable{
     // MARK: - Configuration
     func configure(with item: Item) {
         titleLabel.text = item.title
-        let imageName = item.isFavorite ? "heart.fill" : "heart"
+        let imageName = item.isFavorite ? Naming.selectedFavoriteImage : Naming.unselectedFavoriteImage
         favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
 

@@ -37,9 +37,7 @@ class FavoritesView: UIView, FavoritesViewProtocol {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle(Naming.deleteAllButtonTitle, for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemRed
-        button.layer.cornerRadius = 8
+        button.setTitleColor(.favoritePink, for: .normal)
         button.isHidden = true
         return button
     }()
@@ -79,15 +77,15 @@ class FavoritesView: UIView, FavoritesViewProtocol {
             headerLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             headerLabel.heightAnchor.constraint(equalToConstant: 64),
             
-            tableView.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 16),
+            deleteAllButton.widthAnchor.constraint(equalToConstant: 100),
+            deleteAllButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            deleteAllButton.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 2),
+            deleteAllButton.heightAnchor.constraint(equalToConstant: 44),
+            
+            tableView.topAnchor.constraint(equalTo: deleteAllButton.bottomAnchor, constant: 2),
             tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: deleteAllButton.topAnchor, constant: -16),
-
-            deleteAllButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            deleteAllButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            deleteAllButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            deleteAllButton.heightAnchor.constraint(equalToConstant: 44),
+            tableView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -120),
 
             emptyLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
             emptyLabel.centerYAnchor.constraint(equalTo: centerYAnchor)

@@ -38,7 +38,7 @@ class FavoriteCell: UITableViewCell, NibCapable {
     private let favoriteButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.tintColor = .red
+        button.tintColor = .favoritePink
         return button
     }()
 
