@@ -8,7 +8,7 @@ import RxSwift
 import RxCocoa
 import UIKit
 
-class ItemCoordinator: Coordinator {
+class ItemCoordinator: CoordinatorProtocol {
     var navigationController: UINavigationController
     private let initialItems: [Item]
     private let itemListViewModel: ItemListViewModel
@@ -21,8 +21,10 @@ class ItemCoordinator: Coordinator {
     }
 
     func start() {
-        let itemListVC = ItemListViewController(viewModel: itemListViewModel)
-        let favoritesVC = FavoritesViewController(viewModel: itemListViewModel)
+        let itemListView = ItemListView()
+        let itemListVC = ItemListViewController(viewModel: itemListViewModel, view: itemListView)
+        let favoritesView = FavoritesView()
+        let favoritesVC = FavoritesViewController(viewModel: itemListViewModel, view: favoritesView)
 
            controllers = [
                .items: itemListVC,

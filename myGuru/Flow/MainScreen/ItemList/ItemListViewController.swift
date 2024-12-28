@@ -9,41 +9,20 @@ import RxSwift
 import RxCocoa
 
 class ItemListViewController: UIViewController {
-    
-    private let headerLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Items"
-        label.font = UIFont.systemFont(ofSize: 28, weight: .medium)
-        label.textColor = .black
-        label.textAlignment = .center
-        return label
-    }()
-    private let tableView: UITableView = {
-        let tableView = UITableView()
-        tableView.register(ItemTableViewCell.self, forCellReuseIdentifier: ItemTableViewCell.identifier)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        return tableView
-    }()
-    private let removeAllFavoritesButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Remove All Favorites", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemRed
-        button.layer.cornerRadius = 8
-        button.isHidden = true
-        return button
-    }()
+
+    // MARK: - Properties
     private let disposeBag = DisposeBag()
     private let viewModel: ItemListViewModel
+    private let itemListView: ItemListViewProtocol
     private var isLoadingMoreItems = false
 
     private let dataSource: ItemListDataSource
     private let favoriteButtonRelay: PublishRelay<Int>
 
-    init(viewModel: ItemListViewModel) {
+    // MARK: - Initializer
+    init(viewModel: ItemListViewModel, view: ItemListViewProtocol) {
         self.viewModel = viewModel
+        self.itemListView = view
         self.favoriteButtonRelay = PublishRelay<Int>()
         self.dataSource = ItemListDataSource(favoriteButtonRelay: favoriteButtonRelay)
         super.init(nibName: nil, bundle: nil)
@@ -53,46 +32,25 @@ class ItemListViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func loadView() {
+        view = itemListView
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
         setupBindings()
     }
 
-    private func setupUI() {
-        view.backgroundColor = .white
-
-        view.addSubview(headerLabel)
-        view.addSubview(tableView)
-        view.addSubview(removeAllFavoritesButton)
-
-        NSLayoutConstraint.activate([
-            headerLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 60),
-            headerLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            headerLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            headerLabel.heightAnchor.constraint(equalToConstant: 64),
-            
-            tableView.topAnchor.constraint(equalTo: headerLabel.bottomAnchor, constant: 16),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: removeAllFavoritesButton.topAnchor, constant: -16),
-
-            removeAllFavoritesButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            removeAllFavoritesButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            removeAllFavoritesButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            removeAllFavoritesButton.heightAnchor.constraint(equalToConstant: 44)
-        ])
-    }
-
+    // MARK: - Bindings
     private func setupBindings() {
         let itemSource = dataSource.create()
 
         viewModel.items
             .map { [SectionOfItems(header: "Items", items: $0)] }
-            .bind(to: tableView.rx.items(dataSource: itemSource))
+            .bind(to: itemListView.tableView.rx.items(dataSource: itemSource))
             .disposed(by: disposeBag)
 
-        tableView.rx.setDelegate(self)
+        itemListView.tableView.rx.setDelegate(self)
             .disposed(by: disposeBag)
 
         favoriteButtonRelay
@@ -104,26 +62,26 @@ class ItemListViewController: UIViewController {
         viewModel.hasFavorites
             .map { !$0 }
             .observe(on: MainScheduler.instance)
-            .bind(to: removeAllFavoritesButton.rx.isHidden)
+            .bind(to: itemListView.removeAllFavoritesButton.rx.isHidden)
             .disposed(by: disposeBag)
 
-        removeAllFavoritesButton.rx.tap
+        itemListView.removeAllFavoritesButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.viewModel.removeAllFavorites()
             })
             .disposed(by: disposeBag)
 
-        tableView.rx.contentOffset
+        itemListView.tableView.rx.contentOffset
            .filter { [weak self] offset in
                guard let self = self else { return false }
-               return offset.y > self.tableView.contentSize.height - self.tableView.frame.size.height - 100
+               return offset.y > self.itemListView.tableView.contentSize.height - self.itemListView.tableView.frame.size.height - 100
            }
            .throttle(.seconds(1), scheduler: MainScheduler.instance)
            .subscribe(onNext: { [weak self] _ in
                self?.viewModel.loadMoreItems(count: 10)
            })
            .disposed(by: disposeBag)
-        
+
        viewModel.isLoading
            .distinctUntilChanged()
            .observe(on: MainScheduler.instance)
@@ -135,21 +93,21 @@ class ItemListViewController: UIViewController {
                }
            })
            .disposed(by: disposeBag)
-        
+
         viewModel.error
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] error in
                 self?.showError(error)
             })
             .disposed(by: disposeBag)
-        
-        }
-    
-       private func showError(_ error: Error) {
-           let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-           alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-           present(alert, animated: true, completion: nil)
-       }
+    }
+
+    // MARK: - Helpers
+    private func showError(_ error: Error) {
+        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
 }
 
 extension ItemListViewController: UITableViewDelegate {
@@ -167,4 +125,3 @@ extension ItemListViewController: UITableViewDelegate {
         return UISwipeActionsConfiguration(actions: [deleteAction])
     }
 }
-
