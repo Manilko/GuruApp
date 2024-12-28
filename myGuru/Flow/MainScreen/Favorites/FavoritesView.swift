@@ -19,7 +19,7 @@ class FavoritesView: UIView, FavoritesViewProtocol {
     let headerLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Favorites"
+        label.text = Naming.headerFavoritesView
         label.font = UIFont.systemFont(ofSize: 28, weight: .medium)
         label.textColor = .black
         label.textAlignment = .center
@@ -36,7 +36,7 @@ class FavoritesView: UIView, FavoritesViewProtocol {
     let deleteAllButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Delete All Favorites", for: .normal)
+        button.setTitle(Naming.deleteAllButtonTitle, for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .systemRed
         button.layer.cornerRadius = 8
@@ -47,7 +47,7 @@ class FavoritesView: UIView, FavoritesViewProtocol {
     let emptyLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Favorite list is empty"
+        label.text = Naming.emptyLabelText
         label.font = UIFont.systemFont(ofSize: 18, weight: .medium)
         label.textColor = .darkGray
         label.textAlignment = .center
