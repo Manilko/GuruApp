@@ -67,12 +67,24 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		7BC14F6D2D21639100ACDEAB /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
 		7BC14BE32D1F58D600ACDEAB /* myGuru */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7BC14BF72D1F58D800ACDEAB /* Build configuration list for PBXNativeTarget "myGuru" */;
 			buildPhases = (
-				7BC14F052D21532E00ACDEAB /* ShellScript */,
+				7BC14F6F2D218A2100ACDEAB /*  SwiftGen */,
+				7BC14F052D21532E00ACDEAB /* SwiftLint */,
+				7BC14F6D2D21639100ACDEAB /* Headers */,
 				7BC14BE02D1F58D600ACDEAB /* Sources */,
 				7BC14BE12D1F58D600ACDEAB /* Frameworks */,
 				7BC14BE22D1F58D600ACDEAB /* Resources */,
@@ -143,7 +155,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7BC14F052D21532E00ACDEAB /* ShellScript */ = {
+		7BC14F052D21532E00ACDEAB /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -152,6 +164,7 @@
 			);
 			inputPaths = (
 			);
+			name = SwiftLint;
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -159,6 +172,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+		7BC14F6F2D218A2100ACDEAB /*  SwiftGen */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = " SwiftGen";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Adds support for Apple Silicon brew directory\nexport PATH=\"$PATH:/opt/homebrew/bin\"\n\n# Check if swiftgen is installed\nif which swiftgen >/dev/null; then\n    # Run swiftgen with the configuration file\n    swiftgen config run --config \"${SRCROOT}/swiftgen.yml\"\nelse\n    echo \"warning: SwiftGen not installed, download from https://github.com/SwiftGen/SwiftGen\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

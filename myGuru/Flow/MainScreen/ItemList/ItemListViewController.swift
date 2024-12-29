@@ -46,7 +46,7 @@ class ItemListViewController: UIViewController {
         let itemSource = dataSource.create()
 
         viewModel.output.items
-            .map { [SectionOfItems(header: Naming.headerItems, items: $0)] }
+            .map { [SectionOfItems(header: L10n.headerItems, items: $0)] }
             .bind(to: itemListView.tableView.rx.items(dataSource: itemSource))
             .disposed(by: disposeBag)
 
@@ -104,8 +104,8 @@ class ItemListViewController: UIViewController {
 
     // MARK: - Helpers
     private func showError(_ error: Error) {
-        let alert = UIAlertController(title: Naming.errorAlertTitle, message: error.localizedDescription, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: Naming.errorAlertActionTitle, style: .default, handler: nil))
+        let alert = UIAlertController(title: L10n.errorAlertTitle, message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: L10n.errorAlertActionTitle, style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
 }
@@ -119,7 +119,7 @@ extension ItemListViewController: UITableViewDelegate {
             completionHandler(true)
         }
 
-        deleteAction.image = UIImage(systemName: Naming.deleteImage)
+        deleteAction.image = UIImage(systemName: L10n.deleteImage)
         deleteAction.backgroundColor = UIColor.red
 
         return UISwipeActionsConfiguration(actions: [deleteAction])

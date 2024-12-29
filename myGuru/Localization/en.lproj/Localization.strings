@@ -1,0 +1,19 @@
+/* 
+  Localization.strings
+  myGuru
+
+  Created by Yevhenii Manilko on 29.12.2024.
+  
+*/
+
+"headerFavoritesView" = "Favorites";
+"deleteAllButtonTitle" = "Delete All";
+"emptyLabelText" = "Favorite list is empty";
+"headerItemView" = "Items";
+"removeFavoritesButtonTitle" = "Remove All";
+"headerItems" = "Items";
+"deleteImage" = "trash";
+"errorAlertTitle" = "Error";
+"errorAlertActionTitle" = "OK";
+"selectedFavoriteImage" = "heart.fill";
+"unselectedFavoriteImage" = "heart";

@@ -61,7 +61,7 @@ class ItemTableViewCell: UITableViewCell, NibCapable{
     // MARK: - Configuration
     func configure(with item: Item) {
         titleLabel.text = item.title
-        let imageName = item.isFavorite ? Naming.selectedFavoriteImage : Naming.unselectedFavoriteImage
+        let imageName = item.isFavorite ? L10n.selectedFavoriteImage : L10n.unselectedFavoriteImage
         favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
 

@@ -18,7 +18,7 @@ class ItemListView: UIView, ItemListViewProtocol {
     let headerLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = Naming.headerItemView
+        label.text = L10n.headerItemView
         label.font = UIFont.systemFont(ofSize: 28, weight: .medium)
         label.textColor = .black
         label.textAlignment = .center
@@ -35,7 +35,7 @@ class ItemListView: UIView, ItemListViewProtocol {
     let removeAllFavoritesButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle(Naming.removeFavoritesButtonTitle, for: .normal)
+        button.setTitle(L10n.removeFavoritesButtonTitle, for: .normal)
         button.setTitleColor(.favoritePink, for: .normal)
         button.isHidden = true
         return button

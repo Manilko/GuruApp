@@ -1,0 +1,12 @@
+strings:
+    inputs: myGuru/Localization/en.lproj
+    filter: .+\.strings$
+    outputs:
+        templateName: structured-swift5
+        output: myGuru/Generated/Strings.swift
+xcassets:
+    inputs:
+        myGuru/Assets
+    outputs:
+        templateName: swift5
+        output: myGuru/Generated/Assets.swift
