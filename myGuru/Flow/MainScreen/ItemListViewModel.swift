@@ -9,6 +9,7 @@ import RxCocoa
 
 protocol ItemListViewModelProtocol: BaseViewModelProtocol, LoadProtocol {
     var output: ItemListViewModel.Output { get }
+    
     func toggleFavorite(at index: Int)
     func deleteItem(at index: Int)
     func removeAllFavorites()
@@ -21,6 +22,7 @@ class ItemListViewModel: BaseViewModel, ItemListViewModelProtocol {
         let favoriteItems: Observable<[Item]>
         let hasFavorites: Observable<Bool>
     }
+    
     var output: Output
     // MARK: - private subject
     private var items = BehaviorRelay<[Item]>(value: [])

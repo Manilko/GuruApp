@@ -33,7 +33,6 @@ class TabBarController: UITabBarController {
            }
        }
 
-
     private func setTabBarAppearance() {
         let positionOnX: CGFloat = 10
         let positionOnY: CGFloat = 14

@@ -37,21 +37,21 @@ class SplashViewController: UIViewController {
     private func setupBindings() {
         viewModel.output.data
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] items in
+            .subscribe{ [weak self] items in
                 self?.onLoadingComplete?(items)
-            })
+            }
             .disposed(by: disposeBag)
 
         viewModel.isLoading
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isLoading in
+            .subscribe{ [weak self] isLoading in
                 if isLoading {
                     self?.showSpinner()
                 } else {
                     self?.hideSpinner()
                 }
-            })
+            }
             .disposed(by: disposeBag)
     }
 }

@@ -9,6 +9,7 @@ import UIKit
 
 protocol NibCapable: AnyObject {
     static var identifier: String { get }
+    
     static func nib() -> UINib
 }
 

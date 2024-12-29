@@ -15,6 +15,7 @@ protocol LoadProtocol {
 protocol BaseViewModelProtocol {
     var isLoading: BehaviorRelay<Bool> { get }
     var error: PublishRelay<Error> { get }
+    
     func handleError(_ error: Error)
 }
 

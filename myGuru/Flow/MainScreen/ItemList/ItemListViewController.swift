@@ -54,9 +54,9 @@ class ItemListViewController: UIViewController {
             .disposed(by: disposeBag)
 
         favoriteButtonRelay
-            .subscribe(onNext: { [weak self] index in
+            .subscribe{ [weak self] index in
                 self?.viewModel.toggleFavorite(at: index)
-            })
+            }
             .disposed(by: disposeBag)
 
         viewModel.output.hasFavorites
@@ -66,9 +66,9 @@ class ItemListViewController: UIViewController {
             .disposed(by: disposeBag)
 
         itemListView.removeAllFavoritesButton.rx.tap
-            .subscribe(onNext: { [weak self] in
+            .subscribe{ [weak self] in
                 self?.viewModel.removeAllFavorites()
-            })
+            }
             .disposed(by: disposeBag)
 
         itemListView.tableView.rx.contentOffset
@@ -77,28 +77,28 @@ class ItemListViewController: UIViewController {
                return offset.y > self.itemListView.tableView.contentSize.height - self.itemListView.tableView.frame.size.height - 100
            }
            .throttle(.seconds(1), scheduler: MainScheduler.instance)
-           .subscribe(onNext: { [weak self] _ in
+           .subscribe{ [weak self] _ in
                self?.viewModel.loadMoreItems(count: 10)
-           })
+           }
            .disposed(by: disposeBag)
 
        viewModel.isLoading
            .distinctUntilChanged()
            .observe(on: MainScheduler.instance)
-           .subscribe(onNext: { [weak self] isLoading in
+           .subscribe{ [weak self] isLoading in
                if isLoading {
                    self?.showSpinner()
                } else {
                    self?.hideSpinner()
                }
-           })
+           }
            .disposed(by: disposeBag)
 
         viewModel.error
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] error in
+            .subscribe { [weak self] error in
                 self?.showError(error)
-            })
+            }
             .disposed(by: disposeBag)
     }
 

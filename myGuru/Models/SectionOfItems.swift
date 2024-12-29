@@ -18,4 +18,5 @@ extension SectionOfItems: SectionModelType {
         self = original
         self.items = items
     }
+    
 }

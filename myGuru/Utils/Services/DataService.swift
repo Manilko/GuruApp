@@ -13,7 +13,6 @@ protocol DataServiceProtocol {
     func fetchItems(count: Int) -> Observable<[Item]>
 }
 
-
 class DataService: DataServiceProtocol {
     static let shared = DataService()
 

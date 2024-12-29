@@ -13,19 +13,19 @@ enum TabBarItemType: Hashable {
 
     var title: String {
         switch self {
-        case .items:
-            return "Items"
-        case .favorites:
-            return "Favorites"
+            case .items:
+                return "Items"
+            case .favorites:
+                return "Favorites"
         }
     }
 
     var image: UIImage? {
         switch self {
-        case .items:
-            return UIImage(systemName: "list.bullet")
-        case .favorites:
-            return UIImage(systemName: "heart.fill")
+            case .items:
+                return UIImage(systemName: "list.bullet")
+            case .favorites:
+                return UIImage(systemName: "heart.fill")
         }
     }
 }

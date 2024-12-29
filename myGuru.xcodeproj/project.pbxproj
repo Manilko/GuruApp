@@ -72,6 +72,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7BC14BF72D1F58D800ACDEAB /* Build configuration list for PBXNativeTarget "myGuru" */;
 			buildPhases = (
+				7BC14F052D21532E00ACDEAB /* ShellScript */,
 				7BC14BE02D1F58D600ACDEAB /* Sources */,
 				7BC14BE12D1F58D600ACDEAB /* Frameworks */,
 				7BC14BE22D1F58D600ACDEAB /* Resources */,
@@ -119,6 +120,7 @@
 			packageReferences = (
 				7BC14D432D1F6B9200ACDEAB /* XCRemoteSwiftPackageReference "RxSwift" */,
 				7BC14D442D1F6B9C00ACDEAB /* XCRemoteSwiftPackageReference "RxDataSources" */,
+				7BC14F042D2152C200ACDEAB /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7BC14BE52D1F58D600ACDEAB /* Products */;
@@ -139,6 +141,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7BC14F052D21532E00ACDEAB /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7BC14BE02D1F58D600ACDEAB /* Sources */ = {
@@ -242,7 +264,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -305,7 +327,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -362,6 +384,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.0.2;
+			};
+		};
+		7BC14F042D2152C200ACDEAB /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.57.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

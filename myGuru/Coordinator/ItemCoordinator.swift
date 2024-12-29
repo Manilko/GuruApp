@@ -34,9 +34,8 @@ class ItemCoordinator: CoordinatorProtocol {
            let mainTabBarController = TabBarController(
                 itemListViewModel: itemListViewModel,
                 tabBarItems: [.items, .favorites],
-               controllers: controllers
+                controllers: controllers
            )
         navigationController.setViewControllers([mainTabBarController], animated: false)
     }
 }
-

@@ -73,4 +73,3 @@ class ItemTableViewCell: UITableViewCell, NibCapable{
             .disposed(by: disposeBag)
     }
 }
-

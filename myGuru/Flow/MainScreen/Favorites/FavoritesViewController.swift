@@ -39,7 +39,8 @@ class FavoritesViewController: UIViewController {
     // MARK: - Bindings
     private func setupBindings() {
         viewModel.output.favoriteItems
-            .bind(to: favoritesView.tableView.rx.items(cellIdentifier: FavoriteCell.identifier, cellType: FavoriteCell.self)) { [weak self] index, item, cell in
+            .bind(to: favoritesView.tableView.rx.items(cellIdentifier: FavoriteCell.identifier,
+                                                       cellType: FavoriteCell.self)) { [weak self] index, item, cell in
                 guard let self = self else { return }
                 cell.configure(with: item)
                 cell.bindFavoriteButton(to: self.removeFavoriteRelay, indexPath: index)
@@ -48,7 +49,7 @@ class FavoritesViewController: UIViewController {
 
         removeFavoriteRelay
             .withLatestFrom(viewModel.output.favoriteItems) { (index: $0, favorites: $1) }
-            .subscribe(onNext: { [weak self] index, favorites in
+            .subscribe{ [weak self] index, favorites in
                 guard let self = self else { return }
                 
                 guard index < favorites.count else { return }
@@ -57,13 +58,13 @@ class FavoritesViewController: UIViewController {
                 
                 viewModel.output.items
                     .take(1)
-                    .subscribe(onNext: { allItems in
+                    .subscribe{ allItems in
                         if let originalIndex = allItems.firstIndex(where: { $0.title == itemToRemove.title }) {
                             self.viewModel.toggleFavorite(at: originalIndex)
                         }
-                    })
+                    }
                     .disposed(by: self.disposeBag)
-            })
+            }
             .disposed(by: disposeBag)
         
         viewModel.output.hasFavorites
@@ -73,9 +74,9 @@ class FavoritesViewController: UIViewController {
             .disposed(by: disposeBag)
 
         favoritesView.deleteAllButton.rx.tap
-            .subscribe(onNext: { [weak self] in
+            .subscribe{ [weak self] in
                 self?.viewModel.removeAllFavorites()
-            })
+            }
             .disposed(by: disposeBag)
         
         viewModel.output.hasFavorites

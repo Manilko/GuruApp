@@ -78,4 +78,3 @@ class ItemListView: UIView, ItemListViewProtocol {
 
     }
 }
-

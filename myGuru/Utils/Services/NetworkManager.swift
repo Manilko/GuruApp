@@ -12,6 +12,7 @@ class NetworkManager {
     static let shared = NetworkManager()
 
     private var itemCounter = 0
+    
     private init() {}
 
     func fetchNumbers(count: Int) -> Observable<[Int]> {

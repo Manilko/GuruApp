@@ -1,0 +1,93 @@
+disabled_rules: # rule identifiers to exclude from running
+  - colon
+  - comma
+  - control_statement
+  - opening_brace
+  - trailing_whitespace
+  - vertical_whitespace_opening_braces
+  - vertical_whitespace_closing_braces
+  - anyobject_protocol
+  - conditional_returns_on_newline
+  - strong_iboutlet
+  - file_name
+opt_in_rules: # some rules are only opt-in
+  - yoda_condition
+  - xct_specific_matcher
+  - vertical_parameter_alignment_on_call
+  - vertical_parameter_alignment
+  - unowned_variable_capture
+  - unused_import
+  - trailing_closure
+  - toggle_bool
+  - switch_case_on_newline
+  - single_test_class
+  - operator_usage_whitespace
+  - private_action
+  - private_outlet
+  - pattern_matching_keywords
+  - multiline_arguments
+  - multiline_parameters
+  - modifier_order
+  - let_var_whitespace
+  - empty_count
+  - empty_string
+  - empty_xctest_method
+  - convenience_type
+  - collection_alignment
+  - file_header
+file_header:
+  required_pattern: |
+                    \/\/
+                    \/\/  .*?\.swift
+                    \/\/  myGuru
+                    \/\/
+                    \/\/  Created by .*? on \d{1,2}\.\d{1,2}\.\d{4}\.
+                    \/\/
+included: # paths to include during linting. `--path` is ignored if present.
+  - ./
+analyzer_rules: # Rules run by `swiftlint analyze` (experimental)
+  - explicit_self
+  - unused_declaration
+
+# configurable rules can be customized from this configuration file
+# binary rules can set their severity level
+force_cast: warning # implicitly
+force_try:
+  severity: warning # explicitly
+# rules that have both warning and error levels, can set just the warning level
+# implicitly
+line_length: 150
+# they can set both implicitly with an array
+type_body_length:
+  - 300 # warning
+  - 400 # error
+# or they can set both explicitly
+file_length:
+  warning: 505
+  error: 1200
+# naming rules can set warnings/errors for min_length and max_length
+# additionally they can set excluded names
+type_name:
+  min_length: 4 # only warning
+  max_length: # warning and error
+    warning: 40
+    error: 50
+  excluded: iPhone # excluded via string
+switch_case_alignment:
+    indented_cases: true
+large_tuple:
+    - 4
+identifier_name:
+  min_length: # only min_length
+    error: 3 # only error
+  allowed_symbols:
+    "_"
+  excluded: # excluded via string array
+    - x
+    - y
+    - i
+    - _
+    - vc
+    - id
+    - to
+    - it

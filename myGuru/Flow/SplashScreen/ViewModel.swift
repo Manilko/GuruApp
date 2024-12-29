@@ -11,6 +11,7 @@ import UIKit
 
 protocol SplashViewModelProtocol: BaseViewModelProtocol {
     var output: SplashViewModel.Output { get }
+    
     func startLoading(count: Int)
 }
 
@@ -19,6 +20,7 @@ class SplashViewModel: BaseViewModel, SplashViewModelProtocol{
     struct Output {
         let data: Observable<[Item]>
     }
+    
     var output: Output
     // MARK: - private subject
     private let data = PublishRelay<[Item]>()
