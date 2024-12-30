@@ -36,7 +36,7 @@ class ItemListView: UIView, ItemListViewProtocol {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle(L10n.removeFavoritesButtonTitle, for: .normal)
-        button.setTitleColor(.favoritePink, for: .normal)
+        button.setTitleColor(Asset.Colors.favoritePink1.color, for: .normal)
         button.isHidden = true
         return button
     }()

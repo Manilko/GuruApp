@@ -50,12 +50,12 @@ class TabBarController: UITabBarController {
             cornerRadius: height / 2
         )
         roundLayer.path = bezierPath.cgPath
-        roundLayer.fillColor = UIColor.mainWhite.cgColor
+        roundLayer.fillColor = Asset.Colors.mainWhite1.color.cgColor
         tabBar.layer.insertSublayer(roundLayer, at: 0)
 
         tabBar.itemWidth = width / 5
         tabBar.itemPositioning = .centered
-        tabBar.tintColor = .tabBarItemAccent
-        tabBar.unselectedItemTintColor = .tabBarItemLight
+        tabBar.tintColor = Asset.Colors.tabBarItemAccent1.color
+        tabBar.unselectedItemTintColor = Asset.Colors.tabBarItemLight1.color
     }
 }

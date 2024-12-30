@@ -21,7 +21,7 @@ class ItemTableViewCell: UITableViewCell, NibCapable{
     private let favoriteButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.tintColor = .favoritePink
+        button.tintColor = Asset.Colors.favoritePink1.color
         return button
     }()
 

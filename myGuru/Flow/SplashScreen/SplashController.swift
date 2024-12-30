@@ -31,7 +31,19 @@ class SplashViewController: UIViewController {
     }
 
     private func setupUI() {
-        view.backgroundColor = .blue
+        let backgroundImageView = UIImageView()
+        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
+        backgroundImageView.image = UIImage(named: Asset.Images.icon.name)
+        backgroundImageView.contentMode = .scaleAspectFill
+        view.addSubview(backgroundImageView)
+        view.sendSubviewToBack(backgroundImageView)
+        NSLayoutConstraint.activate([
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        view.backgroundColor = .clear
     }
 
     private func setupBindings() {
