@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import RxSwift
 
 protocol CoordinatorProtocol {
     var navigationController: UINavigationController { get set }
@@ -23,9 +24,14 @@ class AppCoordinator: CoordinatorProtocol {
     func start() {
         let splashViewModel = SplashViewModel()
         let splashViewController = SplashViewController(viewModel: splashViewModel)
-        splashViewController.onLoadingComplete = { [weak self] items in
-            self?.showMainScreen(with: items)
-        }
+
+        splashViewModel.output.loadingComplete
+            .observe(on: MainScheduler.instance)
+            .subscribe{ [weak self] items in
+                self?.showMainScreen(with: items)
+            }
+            .disposed(by: splashViewModel.disposeBag)
+
         navigationController.pushViewController(splashViewController, animated: false)
     }
 

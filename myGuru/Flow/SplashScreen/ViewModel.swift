@@ -19,15 +19,18 @@ class SplashViewModel: BaseViewModel, SplashViewModelProtocol{
     
     struct Output {
         let data: Observable<[Item]>
+        let loadingComplete: Observable<[Item]>
     }
     
     var output: Output
     // MARK: - private subject
     private let data = PublishRelay<[Item]>()
-    
+    private let loadingCompleteRelay = PublishRelay<[Item]>()
+
     init() {
         self.output = Output(
-            data: data.asObservable()
+            data: data.asObservable(),
+            loadingComplete: loadingCompleteRelay.asObservable()
         )
         super.init()
     }
@@ -40,6 +43,7 @@ class SplashViewModel: BaseViewModel, SplashViewModelProtocol{
             .subscribe(
                 onNext: { [weak self] items in
                     self?.data.accept(items)
+                    self?.loadingCompleteRelay.accept(items)
                     self?.isLoading.accept(false)
                 },
                 onError: { [weak self] error in
