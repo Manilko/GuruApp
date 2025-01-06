@@ -10,27 +10,26 @@ import UIKit
 
 class TabBarCoordinator: CoordinatorProtocol {
     var navigationController: UINavigationController
-    let itemListViewModel: ItemListViewModel
-    let favoritesViewModel: FavoritesViewModel
+    private let serviceProvider: ServiceProviderProtocol
+    private let itemListCoordinator: ItemListCoordinator
+    private let favoritesCoordinator: FavoritesCoordinator
 
     init(navigationController: UINavigationController, serviceProvider: ServiceProviderProtocol) {
         self.navigationController = navigationController
-        self.favoritesViewModel = FavoritesViewModel(itemRepository: serviceProvider)
-        self.itemListViewModel = ItemListViewModel(itemRepository: serviceProvider)
-        
+        self.serviceProvider = serviceProvider
+        self.itemListCoordinator = ItemListCoordinator(serviceProvider: serviceProvider)
+        self.favoritesCoordinator = FavoritesCoordinator(serviceProvider: serviceProvider)
     }
 
     func start() {
-        let itemListView = ItemListView()
-        let itemListVC = ItemListViewController(viewModel: itemListViewModel, view: itemListView)
-        let favoritesView = FavoritesView()
-        let favoritesVC = FavoritesViewController(viewModel: favoritesViewModel, view: favoritesView)
-
         let tabBarViewModel = TabBarViewModel(tabBarItems: [.items, .favorites])
 
+        itemListCoordinator.start()
+        favoritesCoordinator.start()
+
         let controllers: [TabBarItemType: UIViewController] = [
-            .items: itemListVC,
-            .favorites: favoritesVC
+            .items: itemListCoordinator.navigationController.viewControllers.first ?? UIViewController(),
+            .favorites: favoritesCoordinator.navigationController.viewControllers.first ?? UIViewController()
         ]
 
         let mainTabBarController = TabBarController(
