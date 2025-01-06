@@ -70,18 +70,22 @@ class ItemListViewController: UIViewController {
                 self?.viewModel.removeAllFavorites()
             }
             .disposed(by: disposeBag)
-
-        itemListView.tableView.rx.contentOffset
-           .filter { [weak self] offset in
-               guard let self = self else { return false }
-               return offset.y > self.itemListView.tableView.contentSize.height - self.itemListView.tableView.frame.size.height - 100
-           }
-           .throttle(.seconds(1), scheduler: MainScheduler.instance)
-           .subscribe{ [weak self] _ in
-               self?.viewModel.loadMoreItems(count: 10)
-           }
-           .disposed(by: disposeBag)
-
+        
+        itemListView.tableView.rx.prefetchRows
+            .filter { [weak self] indexPaths in
+                guard let self = self else { return false }
+                return indexPaths.contains { indexPath in
+                    let lastSectionIndex = self.itemListView.tableView.numberOfSections - 1
+                    let lastRowIndex = self.itemListView.tableView.numberOfRows(inSection: lastSectionIndex) - 1
+                    return indexPath.section == lastSectionIndex && indexPath.row == lastRowIndex
+                }
+            }
+            .throttle(.seconds(1), scheduler: MainScheduler.instance)
+            .subscribe{ [weak self] _ in
+                self?.viewModel.loadMoreItems(count: 10)
+            }
+            .disposed(by: disposeBag)
+        
        viewModel.isLoading
            .distinctUntilChanged()
            .observe(on: MainScheduler.instance)
