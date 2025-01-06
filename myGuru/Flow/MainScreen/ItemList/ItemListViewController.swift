@@ -7,6 +7,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RxDataSources
 
 class ItemListViewController: UIViewController {
 
@@ -15,8 +16,6 @@ class ItemListViewController: UIViewController {
     private let viewModel: ItemListViewModelProtocol
     private let itemListView: ItemListViewProtocol
     private var isLoadingMoreItems = false
-
-    private let dataSource: ItemListDataSource
     private let favoriteButtonRelay: PublishRelay<Int>
 
     // MARK: - Initializer
@@ -24,7 +23,6 @@ class ItemListViewController: UIViewController {
         self.viewModel = viewModel
         self.itemListView = view
         self.favoriteButtonRelay = PublishRelay<Int>()
-        self.dataSource = ItemListDataSource(favoriteButtonRelay: favoriteButtonRelay)
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -43,22 +41,52 @@ class ItemListViewController: UIViewController {
 
     // MARK: - Bindings
     private func setupBindings() {
-        let itemSource = dataSource.create()
+        bindTableViewDataSource()
+        bindTableViewDelegate()
+        bindFavoriteButton()
+        bindRemoveAllFavoritesButton()
+        bindPrefetchRowsForPagination()
+        bindLoadingIndicator()
+        bindErrorHandling()
+    }
+
+    // MARK: - private Methods
+    private func bindTableViewDataSource() {
+        let itemSource = RxTableViewSectionedReloadDataSource<SectionOfItems>(
+            configureCell: { [weak self] _, tableView, indexPath, item in
+                guard let self = self else { return UITableViewCell() }
+                guard let cell = tableView.dequeueReusableCell(
+                    withIdentifier: ItemTableViewCell.identifier,
+                    for: indexPath
+                ) as? ItemTableViewCell else {
+                    fatalError("Unable to dequeue ItemTableViewCell")
+                }
+                cell.configure(with: item)
+                cell.bindFavoriteButton(to: self.favoriteButtonRelay, indexPath: indexPath.row)
+                return cell
+            }
+        )
 
         viewModel.output.items
             .map { [SectionOfItems(header: L10n.headerItems, items: $0)] }
             .bind(to: itemListView.tableView.rx.items(dataSource: itemSource))
             .disposed(by: disposeBag)
+    }
 
+    private func bindTableViewDelegate() {
         itemListView.tableView.rx.setDelegate(self)
             .disposed(by: disposeBag)
+    }
 
+    private func bindFavoriteButton() {
         favoriteButtonRelay
-            .subscribe{ [weak self] index in
+            .subscribe { [weak self] index in
                 self?.viewModel.toggleFavorite(at: index)
             }
             .disposed(by: disposeBag)
+    }
 
+    private func bindRemoveAllFavoritesButton() {
         viewModel.output.hasFavorites
             .map { !$0 }
             .observe(on: MainScheduler.instance)
@@ -66,11 +94,13 @@ class ItemListViewController: UIViewController {
             .disposed(by: disposeBag)
 
         itemListView.removeAllFavoritesButton.rx.tap
-            .subscribe{ [weak self] _ in
+            .subscribe { [weak self] _ in
                 self?.viewModel.removeAllFavorites()
             }
             .disposed(by: disposeBag)
-        
+    }
+
+    private func bindPrefetchRowsForPagination() {
         itemListView.tableView.rx.prefetchRows
             .filter { [weak self] indexPaths in
                 guard let self = self else { return false }
@@ -81,23 +111,27 @@ class ItemListViewController: UIViewController {
                 }
             }
             .throttle(.seconds(1), scheduler: MainScheduler.instance)
-            .subscribe{ [weak self] _ in
+            .subscribe { [weak self] _ in
                 self?.viewModel.loadMoreItems(count: 10)
             }
             .disposed(by: disposeBag)
-        
-       viewModel.isLoading
-           .distinctUntilChanged()
-           .observe(on: MainScheduler.instance)
-           .subscribe{ [weak self] isLoading in
-               if isLoading {
-                   self?.showSpinner()
-               } else {
-                   self?.hideSpinner()
-               }
-           }
-           .disposed(by: disposeBag)
+    }
 
+    private func bindLoadingIndicator() {
+        viewModel.isLoading
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe { [weak self] isLoading in
+                if isLoading {
+                    self?.showSpinner()
+                } else {
+                    self?.hideSpinner()
+                }
+            }
+            .disposed(by: disposeBag)
+    }
+
+    private func bindErrorHandling() {
         viewModel.error
             .observe(on: MainScheduler.instance)
             .subscribe { [weak self] error in
@@ -106,7 +140,6 @@ class ItemListViewController: UIViewController {
             .disposed(by: disposeBag)
     }
 
-    // MARK: - Helpers
     private func showError(_ error: Error) {
         let alert = UIAlertController(title: L10n.errorAlertTitle, message: error.localizedDescription, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: L10n.errorAlertActionTitle, style: .default, handler: nil))
