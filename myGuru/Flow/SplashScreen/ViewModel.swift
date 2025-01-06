@@ -18,40 +18,46 @@ protocol SplashViewModelProtocol: BaseViewModelProtocol {
 class SplashViewModel: BaseViewModel, SplashViewModelProtocol{
     
     struct Output {
-        let data: Observable<[Item]>
-        let loadingComplete: Observable<[Item]>
+        let loadingComplete: Observable<Void>
     }
     
     var output: Output
     // MARK: - private subject
-    private let data = PublishRelay<[Item]>()
-    private let loadingCompleteRelay = PublishRelay<[Item]>()
+    private let loadingCompleteRelay = PublishRelay<Void>()
 
-    init() {
+    init(serviceProvider: ServiceProviderProtocol) {
         self.output = Output(
-            data: data.asObservable(),
             loadingComplete: loadingCompleteRelay.asObservable()
         )
-        super.init()
+        super.init(provider: serviceProvider)
     }
 
     func startLoading(count: Int) {
         isLoading.accept(true)
-
-        dataService.fetchItems(count: count)
+        
+        serviceProvider.dataService.fetchItems(count: count)
             .observe(on: MainScheduler.instance)
             .subscribe(
                 onNext: { [weak self] items in
-                    self?.data.accept(items)
-                    self?.loadingCompleteRelay.accept(items)
-                    self?.isLoading.accept(false)
+                    guard let self = self else { return }
+                    self.saveItems(items)
+                    self.loadingComplete()
                 },
                 onError: { [weak self] error in
                     guard let self = self else { return }
                     self.handleError(error)
-                    self.isLoading.accept(false)
+                    self.loadingComplete()
                 }
             )
             .disposed(by: disposeBag)
+    }
+    
+    private func saveItems(_ items: [Item]) {
+        serviceProvider.itemService.setItems(items)
+    }
+    
+    private func loadingComplete() {
+        loadingCompleteRelay.accept(())
+        isLoading.accept(false)
     }
 }

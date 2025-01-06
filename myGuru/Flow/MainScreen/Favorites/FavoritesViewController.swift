@@ -11,12 +11,12 @@ import RxCocoa
 class FavoritesViewController: UIViewController {
     
     private let disposeBag = DisposeBag()
-    private let viewModel: ItemListViewModel
+    private let viewModel: FavoritesViewModelProtocol
     private let favoritesView: FavoritesViewProtocol
     private let removeFavoriteRelay = PublishRelay<Int>()
 
     // MARK: - Init
-    init(viewModel: ItemListViewModel, view: FavoritesViewProtocol) {
+    init(viewModel: FavoritesViewModelProtocol, view: FavoritesViewProtocol) {
         self.viewModel = viewModel
         self.favoritesView = view
         super.init(nibName: nil, bundle: nil)
@@ -48,22 +48,8 @@ class FavoritesViewController: UIViewController {
             .disposed(by: disposeBag)
 
         removeFavoriteRelay
-            .withLatestFrom(viewModel.output.favoriteItems) { (index: $0, favorites: $1) }
-            .subscribe{ [weak self] index, favorites in
-                guard let self = self else { return }
-                
-                guard index < favorites.count else { return }
-                
-                let itemToRemove = favorites[index]
-                
-                viewModel.output.items
-                    .take(1)
-                    .subscribe{ allItems in
-                        if let originalIndex = allItems.firstIndex(where: { $0.title == itemToRemove.title }) {
-                            self.viewModel.toggleFavorite(at: originalIndex)
-                        }
-                    }
-                    .disposed(by: self.disposeBag)
+            .subscribe{ [weak self] index in
+                self?.viewModel.toggleFavorite(at: index)
             }
             .disposed(by: disposeBag)
         

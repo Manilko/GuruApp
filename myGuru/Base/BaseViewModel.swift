@@ -22,12 +22,12 @@ protocol BaseViewModelProtocol {
 class BaseViewModel: BaseViewModelProtocol {
     let isLoading = BehaviorRelay<Bool>(value: false)
     let error = PublishRelay<Error>()
-
-    let dataService: DataServiceProtocol
+    
+    let serviceProvider: ServiceProviderProtocol
     let disposeBag = DisposeBag()
 
-    init(dataService: DataServiceProtocol = DataService.shared) {
-        self.dataService = dataService
+    init(provider: ServiceProviderProtocol) {
+        self.serviceProvider = provider
     }
 
     func handleError(_ error: Error) {
