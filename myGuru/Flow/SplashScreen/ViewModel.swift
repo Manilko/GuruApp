@@ -10,29 +10,45 @@ import RxCocoa
 import UIKit
 
 protocol SplashViewModelProtocol: BaseViewModelProtocol {
+    var input: SplashViewModel.Input { get }
     var output: SplashViewModel.Output { get }
-    
-    func startLoading(count: Int)
 }
 
-class SplashViewModel: BaseViewModel, SplashViewModelProtocol{
+class SplashViewModel: BaseViewModel, SplashViewModelProtocol {
+    
+    struct Input {
+        let startLoading: PublishRelay<Int>
+    }
     
     struct Output {
         let loadingComplete: Observable<Void>
     }
     
+    var input: Input
     var output: Output
-    // MARK: - private subject
+    
+    // MARK: - Private Subjects
     private let loadingCompleteRelay = PublishRelay<Void>()
 
+    // MARK: - Initializer
     init(serviceProvider: ServiceProviderProtocol) {
+        let startLoadingRelay = PublishRelay<Int>()
+
+        self.input = Input(startLoading: startLoadingRelay)
         self.output = Output(
             loadingComplete: loadingCompleteRelay.asObservable()
         )
+
         super.init(provider: serviceProvider)
+
+        startLoadingRelay
+            .subscribe{ [weak self] count in
+                self?.startLoading(count: count)
+            }
+            .disposed(by: disposeBag)
     }
 
-    func startLoading(count: Int) {
+    private func startLoading(count: Int) {
         isLoading.accept(true)
         
         serviceProvider.dataService.fetchItems(count: count)

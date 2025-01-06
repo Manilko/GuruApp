@@ -12,9 +12,11 @@ import RxCocoa
 class SplashViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private var viewModel: SplashViewModelProtocol
+    private let splashView: SplashViewProtocol
 
-    init(viewModel: SplashViewModelProtocol) {
+    init(viewModel: SplashViewModelProtocol, view: SplashViewProtocol) {
         self.viewModel = viewModel
+        self.splashView = view
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -22,34 +24,27 @@ class SplashViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func loadView() {
+        view = splashView
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupBindings()
-        viewModel.startLoading(count: 20)
+        viewModel.input.startLoading.accept(20)
     }
 
     private func setupUI() {
-        let backgroundImageView = UIImageView()
-        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
-        backgroundImageView.image = UIImage(named: Asset.Images.icon.name)
-        backgroundImageView.contentMode = .scaleAspectFill
-        view.addSubview(backgroundImageView)
-        view.sendSubviewToBack(backgroundImageView)
-        NSLayoutConstraint.activate([
-            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
-            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        ])
-        view.backgroundColor = .clear
+        splashView.backgroundImageView.image = UIImage(named: Asset.Images.icon.name)
+        splashView.backgroundColor = .clear
     }
 
     private func setupBindings() {
         viewModel.isLoading
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .subscribe{ [weak self] isLoading in
+            .subscribe { [weak self] isLoading in
                 if isLoading {
                     self?.showSpinner()
                 } else {

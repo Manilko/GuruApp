@@ -38,6 +38,13 @@ class FavoritesViewController: UIViewController {
 
     // MARK: - Bindings
     private func setupBindings() {
+        bindTableViewDataSource()
+        bindFavoriteButton()
+        bindRemoveAllFavoritesButton()
+        bindEmptyStateVisibility()
+    }
+
+    private func bindTableViewDataSource() {
         viewModel.output.favoriteItems
             .bind(to: favoritesView.tableView.rx.items(cellIdentifier: FavoriteCell.identifier,
                                                        cellType: FavoriteCell.self)) { [weak self] index, item, cell in
@@ -46,27 +53,28 @@ class FavoritesViewController: UIViewController {
                 cell.bindFavoriteButton(to: self.removeFavoriteRelay, indexPath: index)
             }
             .disposed(by: disposeBag)
+    }
 
+    private func bindFavoriteButton() {
         removeFavoriteRelay
-            .subscribe{ [weak self] index in
-                self?.viewModel.toggleFavorite(at: index)
-            }
+            .bind(to: viewModel.input.toggleFavorite)
             .disposed(by: disposeBag)
-        
+    }
+
+    private func bindRemoveAllFavoritesButton() {
+        favoritesView.deleteAllButton.rx.tap
+            .bind(to: viewModel.input.removeAllFavorites)
+            .disposed(by: disposeBag)
+    }
+
+    private func bindEmptyStateVisibility() {
         viewModel.output.hasFavorites
             .map { !$0 }
             .observe(on: MainScheduler.instance)
             .bind(to: favoritesView.deleteAllButton.rx.isHidden)
             .disposed(by: disposeBag)
 
-        favoritesView.deleteAllButton.rx.tap
-            .subscribe{ [weak self] _ in
-                self?.viewModel.removeAllFavorites()
-            }
-            .disposed(by: disposeBag)
-        
         viewModel.output.hasFavorites
-            .map { $0 }
             .observe(on: MainScheduler.instance)
             .bind(to: favoritesView.emptyLabel.rx.isHidden)
             .disposed(by: disposeBag)

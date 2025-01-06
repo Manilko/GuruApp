@@ -16,7 +16,8 @@ protocol CoordinatorProtocol {
 
 class AppCoordinator: CoordinatorProtocol {
     var navigationController: UINavigationController
-    let serviceProvider: ServiceProviderProtocol
+    private let serviceProvider: ServiceProviderProtocol
+    private var splashCoordinator: SplashCoordinator?
 
     init(navigationController: UINavigationController, serviceProvider: ServiceProviderProtocol) {
         self.navigationController = navigationController
@@ -24,22 +25,7 @@ class AppCoordinator: CoordinatorProtocol {
     }
 
     func start() {
-        
-        let splashViewModel = SplashViewModel(serviceProvider: serviceProvider)
-        let splashViewController = SplashViewController(viewModel: splashViewModel)
-
-        splashViewModel.output.loadingComplete
-            .observe(on: MainScheduler.instance)
-            .subscribe{ [weak self] _ in
-                self?.showMainScreen()
-            }
-            .disposed(by: splashViewModel.disposeBag)
-
-        navigationController.pushViewController(splashViewController, animated: false)
-    }
-
-    private func showMainScreen() {
-        let itemCoordinator = TabBarCoordinator(navigationController: navigationController, serviceProvider: serviceProvider)
-        itemCoordinator.start()
+        splashCoordinator = SplashCoordinator(navigationController: navigationController, serviceProvider: serviceProvider)
+        splashCoordinator?.start()
     }
 }

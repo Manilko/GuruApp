@@ -43,11 +43,30 @@ class ItemListViewController: UIViewController {
     private func setupBindings() {
         bindTableViewDataSource()
         bindTableViewDelegate()
-        bindFavoriteButton()
         bindRemoveAllFavoritesButton()
-        bindPrefetchRowsForPagination()
         bindLoadingIndicator()
         bindErrorHandling()
+
+        bindInputs()
+    }
+
+    private func bindInputs() {
+        itemListView.tableView.rx.prefetchRows
+            .filter { [weak self] indexPaths in
+                guard let self = self else { return false }
+                return indexPaths.contains { indexPath in
+                    let lastSectionIndex = self.itemListView.tableView.numberOfSections - 1
+                    let lastRowIndex = self.itemListView.tableView.numberOfRows(inSection: lastSectionIndex) - 1
+                    return indexPath.section == lastSectionIndex && indexPath.row == lastRowIndex
+                }
+            }
+            .map { _ in 10 }
+            .bind(to: viewModel.input.loadMoreItems)
+            .disposed(by: disposeBag)
+
+        favoriteButtonRelay
+            .bind(to: viewModel.input.toggleFavorite)
+            .disposed(by: disposeBag)
     }
 
     // MARK: - private Methods
@@ -78,14 +97,6 @@ class ItemListViewController: UIViewController {
             .disposed(by: disposeBag)
     }
 
-    private func bindFavoriteButton() {
-        favoriteButtonRelay
-            .subscribe { [weak self] index in
-                self?.viewModel.toggleFavorite(at: index)
-            }
-            .disposed(by: disposeBag)
-    }
-
     private func bindRemoveAllFavoritesButton() {
         viewModel.output.hasFavorites
             .map { !$0 }
@@ -95,28 +106,11 @@ class ItemListViewController: UIViewController {
 
         itemListView.removeAllFavoritesButton.rx.tap
             .subscribe { [weak self] _ in
-                self?.viewModel.removeAllFavorites()
+                self?.viewModel.input.removeAllFavorites.accept(())
             }
             .disposed(by: disposeBag)
     }
-
-    private func bindPrefetchRowsForPagination() {
-        itemListView.tableView.rx.prefetchRows
-            .filter { [weak self] indexPaths in
-                guard let self = self else { return false }
-                return indexPaths.contains { indexPath in
-                    let lastSectionIndex = self.itemListView.tableView.numberOfSections - 1
-                    let lastRowIndex = self.itemListView.tableView.numberOfRows(inSection: lastSectionIndex) - 1
-                    return indexPath.section == lastSectionIndex && indexPath.row == lastRowIndex
-                }
-            }
-            .throttle(.seconds(1), scheduler: MainScheduler.instance)
-            .subscribe { [weak self] _ in
-                self?.viewModel.loadMoreItems(count: 10)
-            }
-            .disposed(by: disposeBag)
-    }
-
+    
     private func bindLoadingIndicator() {
         viewModel.isLoading
             .distinctUntilChanged()
@@ -152,7 +146,7 @@ extension ItemListViewController: UITableViewDelegate {
         
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completionHandler) in
             guard let self = self else { return }
-            self.viewModel.deleteItem(at: indexPath.row)
+            self.viewModel.input.deleteItem.accept(indexPath.row)
             completionHandler(true)
         }
 
