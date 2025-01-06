@@ -8,15 +8,13 @@ import RxSwift
 import RxCocoa
 import UIKit
 
-class ItemCoordinator: CoordinatorProtocol {
+class TabBarCoordinator: CoordinatorProtocol {
     var navigationController: UINavigationController
-    private let initialItems: [Item]
     private let itemListViewModel: ItemListViewModel
     private var controllers: [TabBarItemType: UIViewController] = [:]
 
     init(navigationController: UINavigationController, initialItems: [Item]) {
         self.navigationController = navigationController
-        self.initialItems = initialItems
         self.itemListViewModel = ItemListViewModel(initialItems: initialItems)
     }
 
@@ -25,17 +23,19 @@ class ItemCoordinator: CoordinatorProtocol {
         let itemListVC = ItemListViewController(viewModel: itemListViewModel, view: itemListView)
         let favoritesView = FavoritesView()
         let favoritesVC = FavoritesViewController(viewModel: itemListViewModel, view: favoritesView)
+        
+        let tabBarViewModel = TabBarViewModel(tabBarItems: [.items, .favorites])
 
-           controllers = [
-               .items: itemListVC,
-               .favorites: favoritesVC
-           ]
+        controllers = [
+            .items: itemListVC,
+            .favorites: favoritesVC
+        ]
 
-           let mainTabBarController = TabBarController(
-                itemListViewModel: itemListViewModel,
-                tabBarItems: [.items, .favorites],
-                controllers: controllers
-           )
+        let mainTabBarController = TabBarController(
+            viewModel: tabBarViewModel,
+            controllers: controllers
+        )
+
         navigationController.setViewControllers([mainTabBarController], animated: false)
     }
 }

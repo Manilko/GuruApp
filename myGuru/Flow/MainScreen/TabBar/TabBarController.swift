@@ -11,28 +11,31 @@ import RxCocoa
 
 class TabBarController: UITabBarController {
 
-    private let itemListViewModel: ItemListViewModel
+    private let viewModel: TabBarViewModelProtocol
 
-        init(itemListViewModel: ItemListViewModel, tabBarItems: [TabBarItemType], controllers: [TabBarItemType: UIViewController]) {
-            self.itemListViewModel = itemListViewModel
-            super.init(nibName: nil, bundle: nil)
-            setupTabBar(tabBarItems: tabBarItems, controllers: controllers)
-            setTabBarAppearance()
-        }
+    init(viewModel: TabBarViewModelProtocol, controllers: [TabBarItemType: UIViewController]) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+        setupTabBar(controllers: controllers)
+        setTabBarAppearance()
+    }
 
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
-    private func setupTabBar(tabBarItems: [TabBarItemType], controllers: [TabBarItemType: UIViewController]) {
-           viewControllers = tabBarItems.compactMap { tabBarItem in
-               guard let controller = controllers[tabBarItem] else { return nil }
-               controller.tabBarItem.title = tabBarItem.title
-               controller.tabBarItem.image = tabBarItem.image
-               return controller
+    private func setupTabBar(controllers: [TabBarItemType: UIViewController]) {
+       viewControllers = viewModel.output.tabBarItems.compactMap { tabBarItem in
+           guard let controller = controllers[tabBarItem] else {
+               assertionFailure("Missing controller for \(tabBarItem)")
+               return nil
            }
+           controller.tabBarItem.title = tabBarItem.title
+           controller.tabBarItem.image = tabBarItem.image
+           return controller
        }
-
+    }
+    
     private func setTabBarAppearance() {
         let positionOnX: CGFloat = 10
         let positionOnY: CGFloat = 14

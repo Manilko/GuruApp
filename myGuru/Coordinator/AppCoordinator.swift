@@ -36,7 +36,7 @@ class AppCoordinator: CoordinatorProtocol {
     }
 
     private func showMainScreen(with items: [Item]) {
-        let itemCoordinator = ItemCoordinator(navigationController: navigationController, initialItems: items)
+        let itemCoordinator = TabBarCoordinator(navigationController: navigationController, initialItems: items)
         itemCoordinator.start()
     }
 }
