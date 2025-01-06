@@ -74,7 +74,7 @@ class FavoritesViewController: UIViewController {
             .disposed(by: disposeBag)
 
         favoritesView.deleteAllButton.rx.tap
-            .subscribe{ [weak self] in
+            .subscribe{ [weak self] _ in
                 self?.viewModel.removeAllFavorites()
             }
             .disposed(by: disposeBag)

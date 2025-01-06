@@ -66,7 +66,7 @@ class ItemListViewController: UIViewController {
             .disposed(by: disposeBag)
 
         itemListView.removeAllFavoritesButton.rx.tap
-            .subscribe{ [weak self] in
+            .subscribe{ [weak self] _ in
                 self?.viewModel.removeAllFavorites()
             }
             .disposed(by: disposeBag)
