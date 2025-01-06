@@ -15,7 +15,6 @@ class ItemListViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let viewModel: ItemListViewModelProtocol
     private let itemListView: ItemListViewProtocol
-    private var isLoadingMoreItems = false
     private let favoriteButtonRelay: PublishRelay<Int>
 
     // MARK: - Initializer
@@ -69,9 +68,14 @@ class ItemListViewController: UIViewController {
             .disposed(by: disposeBag)
     }
 
-    // MARK: - private Methods
+    // MARK: - Private Methods
     private func bindTableViewDataSource() {
-        let itemSource = RxTableViewSectionedReloadDataSource<SectionOfItems>(
+        let dataSource = RxTableViewSectionedAnimatedDataSource<AnimatableSectionModel<String, Item>>(
+            animationConfiguration: AnimationConfiguration(
+                insertAnimation: .automatic,
+                reloadAnimation: .fade,
+                deleteAnimation: .left
+            ),
             configureCell: { [weak self] _, tableView, indexPath, item in
                 guard let self = self else { return UITableViewCell() }
                 guard let cell = tableView.dequeueReusableCell(
@@ -83,12 +87,15 @@ class ItemListViewController: UIViewController {
                 cell.configure(with: item)
                 cell.bindFavoriteButton(to: self.favoriteButtonRelay, indexPath: indexPath.row)
                 return cell
+            },
+            titleForHeaderInSection: { dataSource, index in
+                return dataSource.sectionModels[index].model
             }
         )
 
         viewModel.output.items
-            .map { [SectionOfItems(header: L10n.headerItems, items: $0)] }
-            .bind(to: itemListView.tableView.rx.items(dataSource: itemSource))
+            .map { [AnimatableSectionModel(model: "Items", items: $0)] }
+            .bind(to: itemListView.tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
     }
 
@@ -110,7 +117,7 @@ class ItemListViewController: UIViewController {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func bindLoadingIndicator() {
         viewModel.isLoading
             .distinctUntilChanged()
@@ -143,7 +150,6 @@ class ItemListViewController: UIViewController {
 
 extension ItemListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { [weak self] (_, _, completionHandler) in
             guard let self = self else { return }
             self.viewModel.input.deleteItem.accept(indexPath.row)
